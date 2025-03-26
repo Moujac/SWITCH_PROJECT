@@ -60,26 +60,24 @@ architecture mac_controller_arch of mac_controller is
     mac_dst_temp, mac_src_temp : std_logic_vector(47 downto 0);
 
 begin
-    -- Combinate logic
+    -- Combinational logic
+    -- Can maybe rework so more logic is in combinational part
     process(all) -- VHDL 2008 or above
     begin
-        -- Handle rr prio
-        case state_rr is
-            when P0 =>
-                state_rr_next <= P1;
-            when P1 =>
-                state_rr_next <= P2;
-            when P2 =>
-                state_rr_next <= P3;
-            when P3 =>
-                state_rr_next <= P0;
-            when others => -- Should not happen
-                state_rr_next <= P0;
-        end case;
+        -- Keep val if no change
+        state_rr_next <= state_rr;
+        state_access_next <= state_access;
+        addr_dst_next <= addr_dst;
+        addr_src_next <= addr_src;
+        -- Maybe redundant
+        mac_dst_temp <= (others => '0');
+        mac_src_temp <= (others => '0');
         -- Handle who has access, RR based
+        -- Prio only changes if highest prio gets its turn!!!
         case state_rr is
             when P0 =>
                 if req_p0 = '1' then
+                    state_rr_next <= P1;
                     state_access_next <= P0;
                     mac_dst_temp <= mac_dst_p0;
                     mac_src_temp <= mac_src_p0;
@@ -100,6 +98,7 @@ begin
                 end if;
             when P1 =>
                 if req_p1 = '1' then
+                    state_rr_next <= P2;
                     state_access_next <= P1;
                     mac_dst_temp <= mac_dst_p1;
                     mac_src_temp <= mac_src_p1;
@@ -120,6 +119,7 @@ begin
                 end if;
             when P2 =>
                 if req_p2 = '1' then
+                    state_rr_next <= P3;
                     state_access_next <= P2;
                     mac_dst_temp <= mac_dst_p2;
                     mac_src_temp <= mac_src_p2;
@@ -140,6 +140,7 @@ begin
                 end if;
             when P3 =>
                 if req_p3 = '1' then
+                    state_rr_next <= P0;
                     state_access_next <= P3;
                     mac_dst_temp <= mac_dst_p3;
                     mac_src_temp <= mac_src_p3;
@@ -157,11 +158,9 @@ begin
                     mac_src_temp <= mac_src_p2;
                 else 
                     state_access_next <= NONE;
-                    -- Maybe not needed?
-                    mac_dst_temp <= (others => '0');
-                    mac_src_temp <= (others => '0');
                 end if;
             when others => -- Should not happen
+                state_rr_next <= P0;
                 state_access_next <= NONE;
         end case;
         -- Handle hashing, depends on who has access
@@ -182,7 +181,7 @@ begin
             state_rr <= P0;
             addr_dst <= (others => '0');
             addr_src <= (others => '0');
-            --mac_table <= (others => (others => '0')); -- maybe?
+            -- mac_table <= (others => (others => '0')); -- maybe?
         elsif rising_edge(clk) then
             --  Reg update
             state_access <= state_access_next;
