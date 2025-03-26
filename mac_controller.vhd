@@ -36,11 +36,14 @@ entity mac_controller is
         mac_dst_p3 : in std_logic_vector(47 downto 0);
         req_p3 : in std_logic;
         out_p3 : out std_logic_vector(2 downto 0);
-        ack_p3 : out std_logic;
+        ack_p3 : out std_logic
     );
 end mac_controller;
 
 architecture mac_controller_arch of mac_controller is
+
+    -- Make sure multiple requests dont get throught when only one is made in reality
+    -- Need to cleate a timeout for mac table
 
     -- BRAM for MAC table, 8k entries, should be able to read/write in a single cycle by use of duel port
     -- 000 = no port, 001 = port 0 ...
@@ -57,7 +60,8 @@ architecture mac_controller_arch of mac_controller is
     signal state_rr, state_rr_next : state_type2 := P0;
 
     -- Temp value for hashing, depends on who has access
-    mac_dst_temp, mac_src_temp : std_logic_vector(47 downto 0);
+    signal mac_dst_temp, mac_src_temp : std_logic_vector(47 downto 0);
+    signal mac_dst_temp16, mac_src_temp16 : std_logic_vector(15 downto 0);
 
 begin
     -- Combinational logic
@@ -165,12 +169,12 @@ begin
         end case;
         -- Handle hashing, depends on who has access
         -- Simple XOR hashing, maybe not good enough spread
-        addr_dst_next <=    mac_dst_temp(47 downto 40) xor mac_dst_temp(39 downto 32) xor 
-                            mac_dst_temp(31 downto 24) xor mac_dst_temp(23 downto 16) xor 
-                            mac_dst_temp(15 downto 8) xor mac_dst_temp(7 downto 0) (12 downto 0);
-        addr_src_next <=    mac_src_temp(47 downto 40) xor mac_src_temp(39 downto 32) xor 
-                            mac_src_temp(31 downto 24) xor mac_src_temp(23 downto 16) xor 
-                            mac_src_temp(15 downto 8) xor mac_src_temp(7 downto 0) (12 downto 0);
+        mac_dst_temp16 <=   mac_dst_temp(47 downto 32) xor mac_dst_temp(31 downto 16) xor 
+                            mac_dst_temp(15 downto 0);
+        addr_dst_next <=    mac_dst_temp16(12 downto 0);
+        mac_src_temp16 <=   mac_src_temp(47 downto 32) xor mac_src_temp(31 downto 16) xor 
+                            mac_src_temp(15 downto 0);
+        addr_src_next <=    mac_src_temp16(12 downto 0);
     end process;
 
     -- Sequential logic
