@@ -47,7 +47,7 @@ architecture mac_controller_arch of mac_controller is
 
     -- BRAM for MAC table, 8k entries, should be able to read/write in a single cycle by use of duel port
     -- 000 = no port, 001 = port 0 ...
-    type mem is array (8191 downto 0) of std_logic_vector(2 downto 0);
+    type mem is array (8191 downto 0) of std_logic_vector(42 downto 0);
     signal mac_table : mem := (others => (others => '0'));
     signal addr_dst, addr_dst_next, addr_src, addr_src_next : std_logic_vector(12 downto 0) := (others => '0');
 
@@ -62,6 +62,10 @@ architecture mac_controller_arch of mac_controller is
     -- Temp value for hashing, depends on who has access
     signal mac_dst_temp, mac_src_temp : std_logic_vector(47 downto 0);
     signal mac_dst_temp16, mac_src_temp16 : std_logic_vector(15 downto 0);
+
+    -- Counters for timeout
+    signal addr_count : std_logic_vector(12 downto 0) := (others => '0');
+    signal time_count : std_logic_vector(39 downto 0) := (others => '0'); -- Should be enough for 100 MHz clock
 
 begin
     -- Combinational logic
@@ -185,13 +189,15 @@ begin
             state_rr <= P0;
             addr_dst <= (others => '0');
             addr_src <= (others => '0');
-            -- mac_table <= (others => (others => '0')); -- maybe?
+            addr_count <= (others => '0');
+            time_count <= (others => '0');
         elsif rising_edge(clk) then
             --  Reg update
             state_access <= state_access_next;
             state_rr <= state_rr_next;
             addr_dst <= addr_dst_next;
             addr_src <= addr_src_next;
+            time_count <= time_count + 1;
             -- Default output vals
             ack_p0 <= '0';
             ack_p1 <= '0';
@@ -206,21 +212,27 @@ begin
                 when P0 =>
                     out_p0 <= mac_table(to_integer(unsigned(addr_dst)));
                     ack_p0 <= '1';
-                    mac_table(to_integer(unsigned(addr_src))) <= "001";
+                    mac_table(to_integer(unsigned(addr_src))) <= "001" & time_count;
                 when P1 =>
                     out_p1 <= mac_table(to_integer(unsigned(addr_dst)));
                     ack_p1 <= '1';
-                    mac_table(to_integer(unsigned(addr_src))) <= "010";
+                    mac_table(to_integer(unsigned(addr_src))) <= "010" & time_count;
                 when P2 =>
                     out_p2 <= mac_table(to_integer(unsigned(addr_dst)));
                     ack_p2 <= '1';
-                    mac_table(to_integer(unsigned(addr_src))) <= "011";
+                    mac_table(to_integer(unsigned(addr_src))) <= "011" & time_count;
                 when P3 =>
                     out_p3 <= mac_table(to_integer(unsigned(addr_dst)));
                     ack_p3 <= '1';
-                    mac_table(to_integer(unsigned(addr_src))) <= "100";
+                    mac_table(to_integer(unsigned(addr_src))) <= "100" & time_count;
                 when NONE =>
-                    -- Do nothing
+                    -- Delete old entries, while memory access is idle
+                    addr_count <= addr_count + 1;
+                    -- Check if entry is older than 5 minutes at 100 MHz
+                    -- 5 minutes = 3000000000 cycles
+                    if time_count - mac_table(to_integer(unsigned(addr_count)))(39 downto 0) > x"B2D0000000" then
+                        mac_table(to_integer(unsigned(addr_count))) <= (others => '0');
+                    end if;
             end case;
         end if;
     end process;

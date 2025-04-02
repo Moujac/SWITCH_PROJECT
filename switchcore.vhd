@@ -21,6 +21,7 @@ end switchcore;
 
 architecture arch of switchcore is
 
+-- Input gate 1
 signal	port_reqeust_macadr_1	: std_logic_vector(47 downto 0);
 signal	port_reqeust_valid_1	: std_logic;
 signal	port_respond_port_1 	: std_logic_vector(1 downto 0);
@@ -28,6 +29,31 @@ signal	port_respond_valid_1 	: std_logic;
 		
 signal	data_1			: std_logic_vector(7 downto 0);
 signal	ctrl_1			: std_logic;
+
+-- Mac controller signals
+signal	mac_src_p0		: std_logic_vector(47 downto 0);
+signal	mac_dst_p0		: std_logic_vector(47 downto 0);
+signal	req_p0			: std_logic;
+signal	out_p0			: std_logic_vector(2 downto 0);
+signal	ack_p0			: std_logic;
+
+signal	mac_src_p1		: std_logic_vector(47 downto 0);
+signal	mac_dst_p1		: std_logic_vector(47 downto 0);
+signal	req_p1			: std_logic;
+signal	out_p1			: std_logic_vector(2 downto 0);
+signal	ack_p1			: std_logic;
+
+signal	mac_src_p2		: std_logic_vector(47 downto 0);
+signal	mac_dst_p2		: std_logic_vector(47 downto 0);
+signal	req_p2			: std_logic;
+signal	out_p2			: std_logic_vector(2 downto 0);
+signal	ack_p2			: std_logic;
+
+signal	mac_src_p3		: std_logic_vector(47 downto 0);
+signal	mac_dst_p3		: std_logic_vector(47 downto 0);
+signal	req_p3			: std_logic;
+signal	out_p3			: std_logic_vector(2 downto 0);
+signal	ack_p3			: std_logic;
 
 BEGIN
 
@@ -50,5 +76,42 @@ INST_INPUT_GATE_1: entity work.input_gate
 		data_o			=> data_1,
 		ctrl_o			=> ctrl_1
     );
+
+	MAC_CONTROLLER: entity work.mac_controller
+		port map (
+			clk			=> clk,
+			reset			=> reset,
+			
+			--Input signals should be active until ack/out is received
+			
+			-- Port 0
+			mac_src_p0		=> port_reqeust_macadr_1,
+			mac_dst_p0		=> port_reqeust_macadr_1,
+			req_p0			=> port_reqeust_valid_1,
+			out_p0			=> port_respond_port_1,
+			ack_p0			=> port_respond_valid_1,
+			
+			-- Port 1
+			mac_src_p1		=> port_reqeust_macadr_1,
+			mac_dst_p1		=> port_reqeust_macadr_1,
+			req_p1			=> port_reqeust_valid_1,
+			out_p1			=> port_respond_port_1,
+			ack_p1			=> port_respond_valid_1,
+
+			-- Port 2
+			mac_src_p2		=> port_reqeust_macadr_1,
+			mac_dst_p2		=> port_reqeust_macadr_1,
+			req_p2			=> port_reqeust_valid_1,
+			out_p2			=> port_respond_port_1,
+			ack_p2			=> port_respond_valid_1,
+
+			 -- Port 3
+			 mac_src_p3	=> port_reqeust_macadr_1,
+			 mac_dst_p3  => port_reqeust_macadr_1,
+			 req_p3      => port_reqeust_valid_1,
+			 out_p3      => port_respond_port_1,
+			 ack_p3      => port_respond_valid_1
+			
+	);
 
 END arch;
