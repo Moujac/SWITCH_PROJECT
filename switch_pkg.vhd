@@ -44,7 +44,7 @@ package switch_pkg is
 	end record;
 
 	type mac_output is record
-		out_ : std_logic_vector(2 downto 0);
+		outt : std_logic_vector(2 downto 0);
 		ack : std_logic;
 	end record;
 

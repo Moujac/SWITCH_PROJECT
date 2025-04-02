@@ -2,6 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use ieee.std_logic_unsigned.all;
+use work.switch_pkg.all;
 
 entity mac_controller is
     port(
@@ -11,32 +12,20 @@ entity mac_controller is
         -- Input signals should be active until ack/out is received
 
         -- Port 0
-        mac_src_p0 : in std_logic_vector(47 downto 0);
-        mac_dst_p0 : in std_logic_vector(47 downto 0);
-        req_p0 : in std_logic;
-        out_p0 : out std_logic_vector(2 downto 0);
-        ack_p0 : out std_logic;
+        macc_in_p0 : in mac_input;
+        macc_out_p0 : out mac_output;
         
         -- Port 1
-        mac_src_p1 : in std_logic_vector(47 downto 0);
-        mac_dst_p1 : in std_logic_vector(47 downto 0);
-        req_p1 : in std_logic;
-        out_p1 : out std_logic_vector(2 downto 0);
-        ack_p1 : out std_logic;
+        macc_in_p1 : in mac_input;
+        macc_out_p1 : out mac_output;
 
         -- Port 2
-        mac_src_p2 : in std_logic_vector(47 downto 0);
-        mac_dst_p2 : in std_logic_vector(47 downto 0);
-        req_p2 : in std_logic;
-        out_p2 : out std_logic_vector(2 downto 0);
-        ack_p2 : out std_logic;
+        macc_in_p2 : in mac_input;
+        macc_out_p2 : out mac_output;
 
          -- Port 3
-        mac_src_p3 : in std_logic_vector(47 downto 0);
-        mac_dst_p3 : in std_logic_vector(47 downto 0);
-        req_p3 : in std_logic;
-        out_p3 : out std_logic_vector(2 downto 0);
-        ack_p3 : out std_logic
+         macc_in_p3 : in mac_input;
+        macc_out_p3 : out mac_output;
     );
 end mac_controller;
 
@@ -65,7 +54,8 @@ architecture mac_controller_arch of mac_controller is
 
     -- Counters for timeout
     signal addr_count : std_logic_vector(12 downto 0) := (others => '0');
-    signal time_count : std_logic_vector(39 downto 0) := (others => '0'); -- Should be enough for 100 MHz clock
+     -- Should be enough for 100 MHz clock, around 3 hr for overflow, logic for overflow? 
+    signal time_count : std_logic_vector(39 downto 0) := (others => '0');
 
 begin
     -- Combinational logic
@@ -84,92 +74,89 @@ begin
         -- Prio only changes if highest prio gets its turn!!!
         case state_rr is
             when P0 =>
-                if req_p0 = '1' then
+                if macc_in_p0.req = '1' then
                     state_rr_next <= P1;
                     state_access_next <= P0;
-                    mac_dst_temp <= mac_dst_p0;
-                    mac_src_temp <= mac_src_p0;
-                elsif req_p1 = '1' then
+                    mac_dst_temp <= macc_in_p0.mac_dst;
+                    mac_src_temp <= macc_in_p0.mac_src;
+                elsif macc_in_p1.req = '1' then
                     state_access_next <= P1;
-                    mac_dst_temp <= mac_dst_p1;
-                    mac_src_temp <= mac_src_p1;
-                elsif req_p2 = '1' then
+                    mac_dst_temp <= macc_in_p1.mac_dst;
+                    mac_src_temp <= macc_in_p1.mac_src;
+                elsif macc_in_p2.req = '1' then
                     state_access_next <= P2;
-                    mac_dst_temp <= mac_dst_p2;
-                    mac_src_temp <= mac_src_p2;
-                elsif req_p3 = '1' then
+                    mac_dst_temp <= macc_in_p2.mac_dst;
+                    mac_src_temp <= macc_in_p2.mac_src;
+                elsif macc_in_p3.req = '1' then
                     state_access_next <= P3;
-                    mac_dst_temp <= mac_dst_p3;
-                    mac_src_temp <= mac_src_p3;
+                    mac_dst_temp <= macc_in_p3.mac_dst;
+                    mac_src_temp <= macc_in_p3.mac_src;
                 else 
                     state_access_next <= NONE;
                 end if;
             when P1 =>
-                if req_p1 = '1' then
+                if macc_in_p1.req = '1' then
                     state_rr_next <= P2;
                     state_access_next <= P1;
-                    mac_dst_temp <= mac_dst_p1;
-                    mac_src_temp <= mac_src_p1;
-                elsif req_p2 = '1' then
+                    mac_dst_temp <= macc_in_p1.mac_dst;
+                    mac_src_temp <= macc_in_p1.mac_src;
+                elsif macc_in_p2.req = '1' then
                     state_access_next <= P2;
-                    mac_dst_temp <= mac_dst_p2;
-                    mac_src_temp <= mac_src_p2;
-                elsif req_p3 = '1' then
+                    mac_dst_temp <= macc_in_p2.mac_dst;
+                    mac_src_temp <= macc_in_p2.mac_src;
+                elsif macc_in_p3.req = '1' then
                     state_access_next <= P3;
-                    mac_dst_temp <= mac_dst_p3;
-                    mac_src_temp <= mac_src_p3;
-                elsif req_p0 = '1' then
+                    mac_dst_temp <= macc_in_p3.mac_dst;
+                    mac_src_temp <= macc_in_p3.mac_src;
+                elsif macc_in_p0.req = '1' then
                     state_access_next <= P0;
-                    mac_dst_temp <= mac_dst_p0;
-                    mac_src_temp <= mac_src_p0;
+                    mac_dst_temp <= macc_in_p0.mac_dst;
+                    mac_src_temp <= macc_in_p0.mac_src;
                 else 
                     state_access_next <= NONE;
                 end if;
             when P2 =>
-                if req_p2 = '1' then
+                if macc_in_p2.req = '1' then
                     state_rr_next <= P3;
                     state_access_next <= P2;
-                    mac_dst_temp <= mac_dst_p2;
-                    mac_src_temp <= mac_src_p2;
-                elsif req_p3 = '1' then
+                    mac_dst_temp <= macc_in_p2.mac_dst;
+                    mac_src_temp <= macc_in_p2.mac_src;
+                elsif macc_in_p3.req = '1' then
                     state_access_next <= P3;
-                    mac_dst_temp <= mac_dst_p3;
-                    mac_src_temp <= mac_src_p3;
-                elsif req_p0 = '1' then
+                    mac_dst_temp <= macc_in_p3.mac_dst;
+                    mac_src_temp <= macc_in_p3.mac_src;
+                elsif macc_in_p0.req = '1' then
                     state_access_next <= P0;
-                    mac_dst_temp <= mac_dst_p0;
-                    mac_src_temp <= mac_src_p0;
-                elsif req_p1 = '1' then
+                    mac_dst_temp <= macc_in_p0.mac_dst;
+                    mac_src_temp <= macc_in_p0.mac_src;
+                elsif macc_in_p1.req = '1' then
                     state_access_next <= P1;
-                    mac_dst_temp <= mac_dst_p1;
-                    mac_src_temp <= mac_src_p1;
+                    mac_dst_temp <= macc_in_p1.mac_dst;
+                    mac_src_temp <= macc_in_p1.mac_src;
                 else 
                     state_access_next <= NONE;
                 end if;
             when P3 =>
-                if req_p3 = '1' then
+                if macc_in_p3.req = '1' then
                     state_rr_next <= P0;
                     state_access_next <= P3;
-                    mac_dst_temp <= mac_dst_p3;
-                    mac_src_temp <= mac_src_p3;
-                elsif req_p0 = '1' then
+                    mac_dst_temp <= macc_in_p3.mac_dst;
+                    mac_src_temp <= macc_in_p3.mac_src;
+                elsif macc_in_p0.req = '1' then
                     state_access_next <= P0;
-                    mac_dst_temp <= mac_dst_p0;
-                    mac_src_temp <= mac_src_p0;
-                elsif req_p1 = '1' then
+                    mac_dst_temp <= macc_in_p0.mac_dst;
+                    mac_src_temp <= macc_in_p0.mac_src;
+                elsif macc_in_p1.req = '1' then
                     state_access_next <= P1;
-                    mac_dst_temp <= mac_dst_p1;
-                    mac_src_temp <= mac_src_p1;
-                elsif req_p2 = '1' then
+                    mac_dst_temp <= macc_in_p1.mac_dst;
+                    mac_src_temp <= macc_in_p1.mac_src;
+                elsif macc_in_p2.req = '1' then
                     state_access_next <= P2;
-                    mac_dst_temp <= mac_dst_p2;
-                    mac_src_temp <= mac_src_p2;
+                    mac_dst_temp <= macc_in_p2.mac_dst;
+                    mac_src_temp <= macc_in_p2.mac_src;
                 else 
                     state_access_next <= NONE;
                 end if;
-            when others => -- Should not happen
-                state_rr_next <= P0;
-                state_access_next <= NONE;
         end case;
         -- Handle hashing, depends on who has access
         -- Simple XOR hashing, maybe not good enough spread
@@ -210,20 +197,20 @@ begin
             -- Handle mem access logic
             case state_access is
                 when P0 =>
-                    out_p0 <= mac_table(to_integer(unsigned(addr_dst)));
-                    ack_p0 <= '1';
+                    macc_in_p0.outt <= mac_table(to_integer(unsigned(addr_dst)));
+                    macc_in_p0.ack <= '1';
                     mac_table(to_integer(unsigned(addr_src))) <= "001" & time_count;
                 when P1 =>
-                    out_p1 <= mac_table(to_integer(unsigned(addr_dst)));
-                    ack_p1 <= '1';
+                    macc_in_p1.outt <= mac_table(to_integer(unsigned(addr_dst)));
+                    macc_in_p1.ack <= '1';
                     mac_table(to_integer(unsigned(addr_src))) <= "010" & time_count;
                 when P2 =>
-                    out_p2 <= mac_table(to_integer(unsigned(addr_dst)));
-                    ack_p2 <= '1';
+                    macc_in_p2.outt <= mac_table(to_integer(unsigned(addr_dst)));
+                    macc_in_p2.ack <= '1';
                     mac_table(to_integer(unsigned(addr_src))) <= "011" & time_count;
                 when P3 =>
-                    out_p3 <= mac_table(to_integer(unsigned(addr_dst)));
-                    ack_p3 <= '1';
+                    macc_in_p3.outt <= mac_table(to_integer(unsigned(addr_dst)));
+                    macc_in_p3.ack <= '1';
                     mac_table(to_integer(unsigned(addr_src))) <= "100" & time_count;
                 when NONE =>
                     -- Delete old entries, while memory access is idle
