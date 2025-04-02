@@ -19,6 +19,35 @@ package switch_pkg is
 		srcadr_valid	: std_logic;
 	end record;
 
+	type schedular_input is record
+		req_b0 : std_logic;
+		len_b0 : std_logic_vector(11 downto 0);
+		req_b1 : std_logic;
+		len_b1 : std_logic_vector(11 downto 0);
+		req_b2 : std_logic;
+		len_b2 : std_logic_vector(11 downto 0);
+		req_b3 : std_logic;
+		len_b3 : std_logic_vector(11 downto 0);
+	end record;
+
+	type schedular_output is record
+		ack_b0 : std_logic;
+		ack_b1 : std_logic;
+		ack_b2 : std_logic;
+		ack_b3 : std_logic;
+	end record;
+
+	type mac_input is record
+		mac_src : std_logic_vector(47 downto 0);
+		mac_dst : std_logic_vector(47 downto 0);
+		req : std_logic;
+	end record;
+
+	type mac_output is record
+		out_ : std_logic_vector(2 downto 0);
+		ack : std_logic;
+	end record;
+
 end package;
 
 package body switch_pkg is
