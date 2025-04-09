@@ -23,9 +23,9 @@ entity mac_controller is
         macc_in_p2 : in mac_input;
         macc_out_p2 : out mac_output;
 
-         -- Port 3
-         macc_in_p3 : in mac_input;
-        macc_out_p3 : out mac_output;
+        -- Port 3
+        macc_in_p3 : in mac_input;
+        macc_out_p3 : out mac_output
     );
 end mac_controller;
 

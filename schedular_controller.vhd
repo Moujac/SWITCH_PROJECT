@@ -74,6 +74,7 @@ end schedular_controller;
 architecture schedular_controller_arch of schedular_controller is
 
 -- Maybe rework most of logic into sequential logic, to reduce combinational logic and make it easier to read
+-- Divide into four instances
 
 -- State machine, who has prio for output access
 type state_type1 is (P0, P1, P2, P3);
