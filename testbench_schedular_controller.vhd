@@ -1,3 +1,15 @@
+---------------------------------------------------------------------------------------------------------------
+-- Description: 
+-- Simple testbench for the schedular_controller
+-- Tests a simple requests and a more complex one with requests from all buffers related to a output port for RR scheduling testing
+--
+-- Related files / Dependencies:
+-- custom package switch_pkg.vhd 
+--
+-- Revision 1.00 - File Created: Apr 23, 2025
+-- Additional Comments:
+---------------------------------------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -12,11 +24,6 @@ architecture testbench_schedular_controller_arch of testbench_schedular_controll
         port(
             clk : in std_logic;
             reset : in std_logic;
-    
-            -- CONNECT THIS TO THE SWITCHCORE
-            -- ACK IS ONLY HIGH FOR 1 CLOCK, DONT MISS IT!!!
-            
-            -- <XXX>_<Output port>_<Input buffer>
     
             -- Output 0 control signals
             sch_in_p0 : in schedular_input;

@@ -1,3 +1,18 @@
+---------------------------------------------------------------------------------------------------------------
+-- Description: 
+-- Schedules the output port access for the four cross bar buffers, using a round robin approach.
+-- The round robin scheduler is implemented as a state machine with four states, one for each input buffer.
+-- The scheduler checks the request signals from the input buffers and grants access to the output port based on the round robin priority.
+-- The scheduler also keeps track of the number of bytes left to send for each output port and generates acknowledgment signals for the input buffers.
+-- The ACK is only HIGH for 1 clk, DONT MISS IT!!!
+--
+-- Related files / Dependencies:
+-- custom package switch_pkg.vhd 
+--
+-- Revision 1.01 - File Created: Apr 9, 2025
+-- Additional Comments:
+---------------------------------------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;

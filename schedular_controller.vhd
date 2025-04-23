@@ -1,3 +1,16 @@
+---------------------------------------------------------------------------------------------------------------
+-- Description: 
+-- Handles scheduling for the four switch output ports, i.e. which of the 16 cross bar buffers has access to the output port.
+-- Uses a component for each output port, which is a round robin scheduler.
+-- The round robin scheduler is implemented in the schedular_rr component.
+--
+-- Related files / Dependencies:
+-- custom package switch_pkg.vhd 
+--
+-- Revision 2.00 - File Created: Mar 26, 2025
+-- Additional Comments:
+---------------------------------------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -8,11 +21,6 @@ entity schedular_controller is
     port(
         clk : in std_logic;
         reset : in std_logic;
-
-        -- CONNECT THIS TO THE SWITCHCORE
-        -- ACK IS ONLY HIGH FOR 1 CLOCK, DONT MISS IT!!!
-        
-        -- <XXX>_<Output port>_<Input buffer>
 
         -- Output 0 control signals
         sch_in_p0 : in schedular_input;

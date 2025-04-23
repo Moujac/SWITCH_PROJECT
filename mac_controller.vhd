@@ -1,3 +1,18 @@
+---------------------------------------------------------------------------------------------------------------
+-- Description: 
+-- Handles mac table access for the four switch input ports
+-- Uses Round Robin to handle multiple requests priority
+-- Uses a simple hash function (XOR's) to get the address for the mac table
+-- Input signals (MAC DST/SRC & req) should be active until ack/out is received, since request may not have highest priority
+-- While memory access is idle, the mac table is checked for old entries and deleted if older than 5 minutes (at 100 MHz)
+--
+-- Related files / Dependencies:
+-- custom package switch_pkg.vhd 
+--
+-- Revision 2.01 - File Created: Mar 24, 2025
+-- Additional Comments:
+---------------------------------------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -8,8 +23,6 @@ entity mac_controller is
     port(
         clk : in std_logic;
         reset : in std_logic;
-
-        -- Input signals should be active until ack/out is received
 
         -- Port 0
         macc_in_p0 : in mac_input;

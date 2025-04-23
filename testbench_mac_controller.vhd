@@ -1,3 +1,15 @@
+---------------------------------------------------------------------------------------------------------------
+-- Description: 
+-- Simple testbench for the mac_controller
+-- Tests a simple requests and a more complex one with all ports active for RR scheduling testing
+--
+-- Related files / Dependencies:
+-- custom package switch_pkg.vhd 
+--
+-- Revision 1.01 - File Created: Mar 26, 2025
+-- Additional Comments:
+---------------------------------------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
