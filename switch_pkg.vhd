@@ -9,14 +9,16 @@ package switch_pkg is
 	type inputGate_metaIO is record
 		data			: std_logic_vector(7 downto 0);
 		data_valid		: std_logic;
+		complement		: std_logic;
 		data_start		: std_logic;
 		data_end		: std_logic;
+		
 		lenght			: std_logic_vector(11 downto 0);
 		lenght_valid	: std_logic;
-		macadr			: std_logic_vector(47 downto 0);
-		macadr_valid	: std_logic;
+		
+		dstadr			: std_logic_vector(47 downto 0);
 		srcadr			: std_logic_vector(47 downto 0);
-		srcadr_valid	: std_logic;
+		macadr_valid	: std_logic;
 	end record;
 
 	type schedular_input is record
