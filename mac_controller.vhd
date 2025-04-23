@@ -186,31 +186,31 @@ begin
             addr_src <= addr_src_next;
             time_count <= time_count + 1;
             -- Default output vals
-            macc_in_p0.ack <= '0';
-            macc_in_p1.ack <= '0';
-            macc_in_p2.ack <= '0';
-            macc_in_p3.ack <= '0';
-            macc_in_p0.outt <= (others => '0');
-            macc_in_p1.outt <= (others => '0');
-            macc_in_p2.outt <= (others => '0');
-            macc_in_p3.outt <= (others => '0');
+            macc_out_p0.ack <= '0';
+            macc_out_p1.ack <= '0';
+            macc_out_p2.ack <= '0';
+            macc_out_p3.ack <= '0';
+            macc_out_p0.outt <= (others => '0');
+            macc_out_p1.outt <= (others => '0');
+            macc_out_p2.outt <= (others => '0');
+            macc_out_p3.outt <= (others => '0');
             -- Handle mem access logic
             case state_access is
                 when P0 =>
-                    macc_in_p0.outt <= mac_table(to_integer(unsigned(addr_dst)));
-                    macc_in_p0.ack <= '1';
+                    macc_out_p0.outt <= mac_table(to_integer(unsigned(addr_dst)))(42 downto 40);
+                    macc_out_p0.ack <= '1';
                     mac_table(to_integer(unsigned(addr_src))) <= "001" & time_count;
                 when P1 =>
-                    macc_in_p1.outt <= mac_table(to_integer(unsigned(addr_dst)));
-                    macc_in_p1.ack <= '1';
+                    macc_out_p1.outt <= mac_table(to_integer(unsigned(addr_dst)))(42 downto 40);
+                    macc_out_p1.ack <= '1';
                     mac_table(to_integer(unsigned(addr_src))) <= "010" & time_count;
                 when P2 =>
-                    macc_in_p2.outt <= mac_table(to_integer(unsigned(addr_dst)));
-                    macc_in_p2.ack <= '1';
+                    macc_out_p2.outt <= mac_table(to_integer(unsigned(addr_dst)))(42 downto 40);
+                    macc_out_p2.ack <= '1';
                     mac_table(to_integer(unsigned(addr_src))) <= "011" & time_count;
                 when P3 =>
-                    macc_in_p3.outt <= mac_table(to_integer(unsigned(addr_dst)));
-                    macc_in_p3.ack <= '1';
+                    macc_out_p3.outt <= mac_table(to_integer(unsigned(addr_dst)))(42 downto 40);
+                    macc_out_p3.ack <= '1';
                     mac_table(to_integer(unsigned(addr_src))) <= "100" & time_count;
                 when NONE =>
                     -- Delete old entries, while memory access is idle

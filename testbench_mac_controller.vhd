@@ -2,6 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use ieee.std_logic_unsigned.all;
+use work.switch_pkg.all;
 
 entity testbench_mac_controller is
 end testbench_mac_controller;
@@ -13,32 +14,20 @@ architecture testbench_mac_controller_arch of testbench_mac_controller is
             reset : in std_logic;
 
             -- Port 0
-            mac_src_p0 : in std_logic_vector(47 downto 0);
-            mac_dst_p0 : in std_logic_vector(47 downto 0);
-            req_p0 : in std_logic;
-            out_p0 : out std_logic_vector(2 downto 0);
-            ack_p0 : out std_logic;
+            macc_in_p0 : in mac_input;
+            macc_out_p0 : out mac_output;
             
             -- Port 1
-            mac_src_p1 : in std_logic_vector(47 downto 0);
-            mac_dst_p1 : in std_logic_vector(47 downto 0);
-            req_p1 : in std_logic;
-            out_p1 : out std_logic_vector(2 downto 0);
-            ack_p1 : out std_logic;
+            macc_in_p1 : in mac_input;
+            macc_out_p1 : out mac_output;
 
             -- Port 2
-            mac_src_p2 : in std_logic_vector(47 downto 0);
-            mac_dst_p2 : in std_logic_vector(47 downto 0);
-            req_p2 : in std_logic;
-            out_p2 : out std_logic_vector(2 downto 0);
-            ack_p2 : out std_logic;
+            macc_in_p2 : in mac_input;
+            macc_out_p2 : out mac_output;
 
-             -- Port 3
-            mac_src_p3 : in std_logic_vector(47 downto 0);
-            mac_dst_p3 : in std_logic_vector(47 downto 0);
-            req_p3 : in std_logic;
-            out_p3 : out std_logic_vector(2 downto 0);
-            ack_p3 : out std_logic
+            -- Port 3
+            macc_in_p3 : in mac_input;
+            macc_out_p3 : out mac_output
         );
     end component;
 
@@ -47,25 +36,37 @@ architecture testbench_mac_controller_arch of testbench_mac_controller is
     signal clk : std_logic := '0';
     signal reset : std_logic := '0';
 
-    signal mac_src_p0, mac_dst_p0 : std_logic_vector(47 downto 0) := (others => '0');
-    signal req_p0 : std_logic := '0';
-    signal out_p0 : std_logic_vector(2 downto 0) := (others => '0');
-    signal ack_p0 : std_logic := '0';
+    signal macc_in_p0 : mac_input := (
+        mac_src => (others => '0'),
+        mac_dst => (others => '0'),
+        req => '0');
+    signal macc_out_p0 : mac_output := (
+        outt => (others => '0'),
+        ack => '0');
 
-    signal mac_src_p1, mac_dst_p1 : std_logic_vector(47 downto 0) := (others => '0');
-    signal req_p1 : std_logic := '0';
-    signal out_p1 : std_logic_vector(2 downto 0) := (others => '0');
-    signal ack_p1 : std_logic := '0';
+    signal macc_in_p1 : mac_input := (
+        mac_src => (others => '0'),
+        mac_dst => (others => '0'),
+        req => '0');
+    signal macc_out_p1 : mac_output := (
+        outt => (others => '0'),
+        ack => '0');
 
-    signal mac_src_p2, mac_dst_p2 : std_logic_vector(47 downto 0) := (others => '0');
-    signal req_p2 : std_logic := '0';
-    signal out_p2 : std_logic_vector(2 downto 0) := (others => '0');
-    signal ack_p2 : std_logic := '0';
+    signal macc_in_p2 : mac_input := (
+        mac_src => (others => '0'),
+        mac_dst => (others => '0'),
+        req => '0');
+    signal macc_out_p2 : mac_output := (
+        outt => (others => '0'),
+        ack => '0');
 
-    signal mac_src_p3, mac_dst_p3 : std_logic_vector(47 downto 0) := (others => '0');
-    signal req_p3 : std_logic := '0';
-    signal out_p3 : std_logic_vector(2 downto 0) := (others => '0');
-    signal ack_p3 : std_logic := '0';
+    signal macc_in_p3 : mac_input := (
+        mac_src => (others => '0'),
+        mac_dst => (others => '0'),
+        req => '0');
+    signal macc_out_p3 : mac_output := (
+        outt => (others => '0'),
+        ack => '0');
 
 begin
     uut : mac_controller
@@ -73,29 +74,17 @@ begin
             clk => clk,
             reset => reset,
 
-            mac_src_p0 => mac_src_p0,
-            mac_dst_p0 => mac_dst_p0,
-            req_p0 => req_p0,
-            out_p0 => out_p0,
-            ack_p0 => ack_p0,
+            macc_in_p0 => macc_in_p0,
+            macc_out_p0 => macc_out_p0,
 
-            mac_src_p1 => mac_src_p1,
-            mac_dst_p1 => mac_dst_p1,
-            req_p1 => req_p1,
-            out_p1 => out_p1,
-            ack_p1 => ack_p1,
+            macc_in_p1 => macc_in_p1,
+            macc_out_p1 => macc_out_p1,
 
-            mac_src_p2 => mac_src_p2,
-            mac_dst_p2 => mac_dst_p2,
-            req_p2 => req_p2,
-            out_p2 => out_p2,
-            ack_p2 => ack_p2,
+            macc_in_p2 => macc_in_p2,
+            macc_out_p2 => macc_out_p2,
 
-            mac_src_p3 => mac_src_p3,
-            mac_dst_p3 => mac_dst_p3,
-            req_p3 => req_p3,
-            out_p3 => out_p3,
-            ack_p3 => ack_p3
+            macc_in_p3 => macc_in_p3,
+            macc_out_p3 => macc_out_p3
         );
 
     process
@@ -106,17 +95,37 @@ begin
 
     process
     begin
+        -- Start with reset
         reset <= '1';
         wait for CLOCK * 2;
         reset <= '0';
         wait for CLOCK * 2;
 
-        mac_src_p0 <= x"100000000000";
-        mac_dst_p0 <= x"010000000000";
-        req_p0 <= '1';
+        -- Test case 1: Request from port 0, simple
+        macc_in_p0.mac_src <= x"100000000000";
+        macc_in_p0.mac_dst <= x"010000000000";
+        macc_in_p0.req <= '1';
+        wait for CLOCK * 2;
+        macc_in_p0.req <= '0';
+        wait for CLOCK * 10;
+
+        -- Test case 2: Request from all input ports
+        -- Verify round robin scheduling
+        macc_in_p0.mac_src <= x"100000000000";
+        macc_in_p0.mac_dst <= x"010000000000";
+        macc_in_p0.req <= '1';
+        macc_in_p1.mac_src <= x"010000000000";
+        macc_in_p1.mac_dst <= x"100000000000";
+        macc_in_p1.req <= '1';
+        macc_in_p2.mac_src <= x"001000000000";
+        macc_in_p2.mac_dst <= x"100000000000";
+        macc_in_p2.req <= '1';
+        macc_in_p3.mac_src <= x"000100000000";
+        macc_in_p3.mac_dst <= x"100000000000";
+        macc_in_p3.req <= '1';
+        wait for CLOCK * 100;
+
         wait;
 
-
     end process;
-
 end architecture;
