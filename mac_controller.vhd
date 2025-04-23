@@ -186,14 +186,14 @@ begin
             addr_src <= addr_src_next;
             time_count <= time_count + 1;
             -- Default output vals
-            ack_p0 <= '0';
-            ack_p1 <= '0';
-            ack_p2 <= '0';
-            ack_p3 <= '0';
-            out_p0 <= (others => '0');
-            out_p1 <= (others => '0');
-            out_p2 <= (others => '0');
-            out_p3 <= (others => '0');
+            macc_in_p0.ack <= '0';
+            macc_in_p1.ack <= '0';
+            macc_in_p2.ack <= '0';
+            macc_in_p3.ack <= '0';
+            macc_in_p0.outt <= (others => '0');
+            macc_in_p1.outt <= (others => '0');
+            macc_in_p2.outt <= (others => '0');
+            macc_in_p3.outt <= (others => '0');
             -- Handle mem access logic
             case state_access is
                 when P0 =>
