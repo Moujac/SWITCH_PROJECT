@@ -31,6 +31,12 @@ entity fabric is
         TX_D2 : out std_logic_vector(7 downto 0);
         TX_D3 : out std_logic_vector(7 downto 0);
 
+        -- NEED DATA + DATA VALID 
+        -- NEED LEN + LEN VALID
+        -- NEED DESTINATION BITS 3 BITS VECTOR
+        -- NEED TX + TX VALID 
+        -- CREATE NEW RECORD FOR THIS 
+
         -- Scheduler input / output
         sch_in_p0 : in schedular_output;
         sch_out_p0 : out schedular_input;
@@ -47,7 +53,6 @@ entity fabric is
 end fabric;
 
 architecture fabric_arch of fabric is
--- Sanity check signal connections ...
 
 begin 
     -- Input port 0 instances !!!

@@ -22,5 +22,8 @@ end crossbar;
 
 architecture crossbar_arch of crossbar is
 -- create buffer here!!!
+-- need to be 4x max ethernet frame size (1518 bytes) = 6072 bytes
+-- need buffer for lengths as well 
+-- CHECK DEST MATCH???
 
  end architecture;
