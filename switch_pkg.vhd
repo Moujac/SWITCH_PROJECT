@@ -50,6 +50,14 @@ package switch_pkg is
 		ack : std_logic;
 	end record;
 
+	type fabric_input is record
+		
+	end record;
+
+	type fabric_output is record
+
+	end record;
+
 end package;
 
 package body switch_pkg is

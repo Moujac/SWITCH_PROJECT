@@ -38,6 +38,7 @@ entity fabric is
         -- CREATE NEW RECORD FOR THIS 
 
         -- Scheduler input / output
+        -- In relation to the different output ports
         sch_in_p0 : in schedular_output;
         sch_out_p0 : out schedular_input;
 
@@ -53,6 +54,10 @@ entity fabric is
 end fabric;
 
 architecture fabric_arch of fabric is
+
+-- maybe problem with driving outputs with multiple signals???
+-- maybe create crossbar buffers as 4 components instead???
+-- create logic to drive the outputs, to mitigate multiple signals driving the same output!!!
 
 begin 
     -- Input port 0 instances !!!
