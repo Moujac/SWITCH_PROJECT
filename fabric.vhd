@@ -63,7 +63,7 @@ signal d_out3_in0, d_out3_in1, d_out3_in2, d_out3_in3 : fabric_output;
 
 -- State machine, to keep track of who has access to the output port
 type state_type1 is (P0, P1, P2, P3);
-signal state_out0, state_out2, state_out2, state_out3 : state_type1 := P0;
+signal state_out0, state_out1, state_out2, state_out3 : state_type1 := P0;
 
 begin 
     -- Input port 0 instances !!!
