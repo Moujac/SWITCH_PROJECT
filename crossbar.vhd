@@ -5,7 +5,7 @@
 -- Related files / Dependencies:
 -- custom package switch_pkg.vhd 
 --
--- Revision 1.00 - File Created: Apr 24, 2025
+-- Revision 1.01 - File Created: Apr 24, 2025
 -- Additional Comments:
 ---------------------------------------------------------------------------------------------------------------
 
@@ -21,8 +21,8 @@ entity crossbar is
         reset : in std_logic;
 
         -- Data input / output
-        RX_D : in std_logic_vector(7 downto 0);
-        TX_D : out std_logic_vector(7 downto 0);
+        data_in : in fabric_input;
+        data_out : out fabric_output;
 
         -- Scheduler input / output
         req : out std_logic;
@@ -36,5 +36,6 @@ architecture crossbar_arch of crossbar is
 -- need to be 4x max ethernet frame size (1518 bytes) = 6072 bytes
 -- need buffer for lengths as well 
 -- CHECK DEST MATCH???
+begin
 
  end architecture;
