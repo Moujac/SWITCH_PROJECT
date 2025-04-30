@@ -20,22 +20,22 @@ entity fabric is
         clk : in std_logic;
         reset : in std_logic;
 
-        -- Data input / output
-        RX_D0 : in std_logic_vector(7 downto 0);
-        RX_D1 : in std_logic_vector(7 downto 0);
-        RX_D2 : in std_logic_vector(7 downto 0);
-        RX_D3 : in std_logic_vector(7 downto 0);
+        -- Input 0 
+        in_p0 : in fabric_input;
+        out_p0 : out fabric_output;
 
-        TX_D0 : out std_logic_vector(7 downto 0);
-        TX_D1 : out std_logic_vector(7 downto 0);
-        TX_D2 : out std_logic_vector(7 downto 0);
-        TX_D3 : out std_logic_vector(7 downto 0);
+        -- Input 1
+        in_p1 : in fabric_input;
+        out_p1 : out fabric_output;
 
-        -- NEED DATA + DATA VALID 
-        -- NEED LEN + LEN VALID
-        -- NEED DESTINATION BITS 3 BITS VECTOR
-        -- NEED TX + TX VALID 
-        -- CREATE NEW RECORD FOR THIS 
+        -- Input 3
+        in_p1 : in fabric_input;
+        out_p1 : out fabric_output;
+
+        -- Input 4
+        in_p1 : in fabric_input;
+        out_p1 : out fabric_output;
+
 
         -- Scheduler input / output
         -- In relation to the different output ports

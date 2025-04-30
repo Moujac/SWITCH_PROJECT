@@ -51,11 +51,21 @@ package switch_pkg is
 	end record;
 
 	type fabric_input is record
-		
+		-- NEED DATA + DATA VALID 
+		RX : std_logic_vector(7 downto 0);
+		val_d : std_logic;
+        -- NEED LEN + LEN VALID
+		len : std_logic_vector(11 downto 0);
+		val_l : std_logic;
+        -- NEED DESTINATION BITS 3 BITS VECTOR + VALID BIT
+		outt : std_logic_vector(2 downto 0);
+		val_o : std_logic;
 	end record;
 
 	type fabric_output is record
-
+		-- NEED TX + TX VALID 
+		TX : std_logic_vector(7 downto 0);
+		val : std_logic;
 	end record;
 
 end package;
