@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------------------
 -- Description: 
--- TEMP 
+-- OUTPUT PORT 0 CROSSBAR BUFFERS!!!
 --
 -- Related files / Dependencies:
 -- custom package switch_pkg.vhd 
@@ -33,10 +33,14 @@ end crossbar;
 
 architecture crossbar_arch of crossbar is
 
+signal data : std_logic_vector(7 downto 0) := (others => '0');
+signal rdreq : std_logic := '0';
+signal wrreq : std_logic := '0';
+signal empty : std_logic := '0';
+signal full : std_logic := '0';
+signal q : std_logic_vector(7 downto 0) := (others => '0');
+signal usedw : std_logic_vector(11 downto 0) := (others => '0');
 
--- need buffer for lengths as well 
--- CHECK DEST MATCH??? how???
--- Create entity for each output port, to know what dst is what... 
 begin
     -- create buffer here!!!
     -- need to be 4x max ethernet frame size (1518 bytes) = 6072 bytes
@@ -45,13 +49,13 @@ begin
         port map(
             -- later
             clock => clk,
-            data		: IN STD_LOGIC_VECTOR (7 DOWNTO 0);
-            rdreq		: IN STD_LOGIC ;
-            wrreq		: IN STD_LOGIC ;
-            empty		: OUT STD_LOGIC ;
-            full		: OUT STD_LOGIC ; 
-            q		: OUT STD_LOGIC_VECTOR (7 DOWNTO 0); -- Data out
-            usedw		: OUT STD_LOGIC_VECTOR (11 DOWNTO 0) -- Size
+            data => data,
+            rdreq => rdreq,
+            wrreq => wrreq,
+            empty => empty,
+            full => full,
+            q => q, -- Data out
+            usedw => usedw -- Size
         );
 
     -- Combinational logic
@@ -66,6 +70,17 @@ begin
         if reset = '1' then
 
         elsif rising_edge(clk) then
+            -- default values
+            data <= (others => '0');
+            rdreq <= '0';
+            wrreq <= '0';
+
+            -- CHECK DEST MATCH AND VALID
+            if data_in.val_o = '1' and (data_in.outt = "000" or data_in.outt = "001") then -- Match with all / out port 0
+                
+            end if;
+                
+            -- Create entity for each output port, to know what dst is what... 
 
         end if;
     end process;
