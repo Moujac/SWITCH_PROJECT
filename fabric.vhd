@@ -5,7 +5,7 @@
 -- Related files / Dependencies:
 -- custom package switch_pkg.vhd 
 --
--- Revision 2.00 - File Created: Apr 24, 2025
+-- Revision 2.01 - File Created: Apr 24, 2025
 -- Additional Comments:
 ---------------------------------------------------------------------------------------------------------------
 
@@ -78,9 +78,9 @@ begin
             data_out => d_out0_in0,
 
             -- Scheduler input / output
-            req => sch_in_p0.req_b0,
-            len => sch_in_p0.len_b0,
-            ack => sch_out_p0.ack_b0
+            req => sch_out_p0.req_b0,
+            len => sch_out_p0.len_b0,
+            ack => sch_in_p0.ack_b0
         );
     
     CROSSBAR_BUFFER_1 : entity work.crossbar
@@ -94,9 +94,9 @@ begin
             data_out => d_out1_in0,
 
             -- Scheduler input / output
-            req => sch_in_p1.req_b0,
-            len => sch_in_p1.len_b0,
-            ack => sch_out_p1.ack_b0
+            req => sch_out_p1.req_b0,
+            len => sch_out_p1.len_b0,
+            ack => sch_in_p1.ack_b0
         );
 
     CROSSBAR_BUFFER_2 : entity work.crossbar
@@ -110,9 +110,9 @@ begin
             data_out => d_out2_in0,
 
             -- Scheduler input / output
-            req => sch_in_p2.req_b0,
-            len => sch_in_p2.len_b0,
-            ack => sch_out_p2.ack_b0
+            req => sch_out_p2.req_b0,
+            len => sch_out_p2.len_b0,
+            ack => sch_in_p2.ack_b0
         );
     
     CROSSBAR_BUFFER_3 : entity work.crossbar
@@ -126,9 +126,9 @@ begin
             data_out => d_out3_in0,
 
             -- Scheduler input / output
-            req => sch_in_p3.req_b0,
-            len => sch_in_p3.len_b0,
-            ack => sch_out_p3.ack_b0
+            req => sch_out_p3.req_b0,
+            len => sch_out_p3.len_b0,
+            ack => sch_in_p3.ack_b0
         );
 
     -- Input port 1 instances !!!
@@ -143,9 +143,9 @@ begin
             data_out => d_out0_in1,
 
             -- Scheduler input / output
-            req => sch_in_p0.req_b1,
-            len => sch_in_p0.len_b1,
-            ack => sch_out_p0.ack_b1
+            req => sch_out_p0.req_b1,
+            len => sch_out_p0.len_b1,
+            ack => sch_in_p0.ack_b1
         );
     
     CROSSBAR_BUFFER_5 : entity work.crossbar
@@ -156,12 +156,12 @@ begin
             -- Data input / output
             data_in => in_p1,
             --data_out => out_p1,
-            data_out => d_out1_in1
+            data_out => d_out1_in1,
 
             -- Scheduler input / output
-            req => sch_in_p1.req_b1,
-            len => sch_in_p1.len_b1,
-            ack => sch_out_p1.ack_b1
+            req => sch_out_p1.req_b1,
+            len => sch_out_p1.len_b1,
+            ack => sch_in_p1.ack_b1
         );
     
     CROSSBAR_BUFFER_6 : entity work.crossbar
@@ -175,9 +175,9 @@ begin
             data_out => d_out2_in1,
 
             -- Scheduler input / output
-            req => sch_in_p2.req_b1,
-            len => sch_in_p2.len_b1,
-            ack => sch_out_p2.ack_b1
+            req => sch_out_p2.req_b1,
+            len => sch_out_p2.len_b1,
+            ack => sch_in_p2.ack_b1
         );
     
     CROSSBAR_BUFFER_7 : entity work.crossbar
@@ -191,9 +191,9 @@ begin
             data_out => d_out3_in1,
 
             -- Scheduler input / output
-            req => sch_in_p3.req_b1,
-            len => sch_in_p3.len_b1,
-            ack => sch_out_p3.ack_b1
+            req => sch_out_p3.req_b1,
+            len => sch_out_p3.len_b1,
+            ack => sch_in_p3.ack_b1
         );
     
     -- Input port 2 instances !!!
@@ -208,9 +208,9 @@ begin
             data_out => d_out0_in2,
 
             -- Scheduler input / output
-            req => sch_in_p0.req_b2,
-            len => sch_in_p0.len_b2,
-            ack => sch_out_p0.ack_b2
+            req => sch_out_p0.req_b2,
+            len => sch_out_p0.len_b2,
+            ack => sch_in_p0.ack_b2
         );
     
     CROSSBAR_BUFFER_9 : entity work.crossbar
@@ -224,9 +224,9 @@ begin
             data_out => d_out1_in2,
 
             -- Scheduler input / output
-            req => sch_in_p1.req_b2,
-            len => sch_in_p1.len_b2,
-            ack => sch_out_p1.ack_b2
+            req => sch_out_p1.req_b2,
+            len => sch_out_p1.len_b2,
+            ack => sch_in_p1.ack_b2
         );
 
     CROSSBAR_BUFFER_10 : entity work.crossbar
@@ -240,9 +240,9 @@ begin
             data_out => d_out2_in2,
 
             -- Scheduler input / output
-            req => sch_in_p2.req_b2,
-            len => sch_in_p2.len_b2,
-            ack => sch_out_p2.ack_b2
+            req => sch_out_p2.req_b2,
+            len => sch_out_p2.len_b2,
+            ack => sch_in_p2.ack_b2
         );
 
     CROSSBAR_BUFFER_11 : entity work.crossbar
@@ -256,9 +256,9 @@ begin
             data_out => d_out3_in2,
 
             -- Scheduler input / output
-            req => sch_in_p3.req_b2,
-            len => sch_in_p3.len_b2,
-            ack => sch_out_p3.ack_b2
+            req => sch_out_p3.req_b2,
+            len => sch_out_p3.len_b2,
+            ack => sch_in_p3.ack_b2
         );
 
     -- Input port 3 instances !!!
@@ -273,9 +273,9 @@ begin
             data_out => d_out0_in3,
 
             -- Scheduler input / output
-            req => sch_in_p0.req_b3,
-            len => sch_in_p0.len_b3,
-            ack => sch_out_p0.ack_b3
+            req => sch_out_p0.req_b3,
+            len => sch_out_p0.len_b3,
+            ack => sch_in_p0.ack_b3
         );
     
     CROSSBAR_BUFFER_13 : entity work.crossbar
@@ -289,9 +289,9 @@ begin
             data_out => d_out1_in3,
 
             -- Scheduler input / output
-            req => sch_in_p1.req_b3,
-            len => sch_in_p1.len_b3,
-            ack => sch_out_p1.ack_b3
+            req => sch_out_p1.req_b3,
+            len => sch_out_p1.len_b3,
+            ack => sch_in_p1.ack_b3
         );
     
     CROSSBAR_BUFFER_14 : entity work.crossbar
@@ -305,9 +305,9 @@ begin
             data_out => d_out2_in3,
 
             -- Scheduler input / output
-            req => sch_in_p2.req_b3,
-            len => sch_in_p2.len_b3,
-            ack => sch_out_p2.ack_b3
+            req => sch_out_p2.req_b3,
+            len => sch_out_p2.len_b3,
+            ack => sch_in_p2.ack_b3
         );
     
     CROSSBAR_BUFFER_15 : entity work.crossbar
@@ -321,19 +321,19 @@ begin
             data_out => d_out3_in3,
 
             -- Scheduler input / output
-            req => sch_in_p3.req_b3,
-            len => sch_in_p3.len_b3,
-            ack => sch_out_p3.ack_b3
+            req => sch_out_p3.req_b3,
+            len => sch_out_p3.len_b3,
+            ack => sch_in_p3.ack_b3
         );
 
     -- Combinational logic to drive the output ports
     process(all)
     begin
         -- Default values
-        out_p0 <= (others => '0');
-        out_p1 <= (others => '0');
-        out_p2 <= (others => '0');
-        out_p3 <= (others => '0');
+        out_p0 <= (TX => (others => '0'), val => '0');
+        out_p1 <= (TX => (others => '0'), val => '0');
+        out_p2 <= (TX => (others => '0'), val => '0');
+        out_p3 <= (TX => (others => '0'), val => '0');
 
         -- Drive output ports based on state machine
         case state_out0 is
@@ -394,43 +394,43 @@ begin
             -- create logic to drive the outputs, to mitigate multiple signals driving the same output!!!
             -- Not pretty, but should work for now, since only 1 ack at a time from schedular!!!
             -- Handle output port 0 access
-            if sch_out_p0.ack_b0 = '1' then
+            if sch_in_p0.ack_b0 = '1' then
                 state_out0 <= P0;
-            elsif sch_out_p0.ack_b1 = '1' then
+            elsif sch_in_p0.ack_b1 = '1' then
                 state_out0 <= P1;
-            elsif sch_out_p0.ack_b2 = '1' then
+            elsif sch_in_p0.ack_b2 = '1' then
                 state_out0 <= P2;
-            elsif sch_out_p0.ack_b3 = '1' then
+            elsif sch_in_p0.ack_b3 = '1' then
                 state_out0 <= P3;
             end if;
             -- Handle output port 1 access
-            if sch_out_p1.ack_b0 = '1' then
+            if sch_in_p1.ack_b0 = '1' then
                 state_out1 <= P0;
-            elsif sch_out_p1.ack_b1 = '1' then
+            elsif sch_in_p1.ack_b1 = '1' then
                 state_out1 <= P1;
-            elsif sch_out_p1.ack_b2 = '1' then
+            elsif sch_in_p1.ack_b2 = '1' then
                 state_out1 <= P2;
-            elsif sch_out_p1.ack_b3 = '1' then
+            elsif sch_in_p1.ack_b3 = '1' then
                 state_out1 <= P3;
             end if;
             -- Handle output port 2 access
-            if sch_out_p2.ack_b0 = '1' then
+            if sch_in_p2.ack_b0 = '1' then
                 state_out2 <= P0;
-            elsif sch_out_p2.ack_b1 = '1' then
+            elsif sch_in_p2.ack_b1 = '1' then
                 state_out2 <= P1;
-            elsif sch_out_p2.ack_b2 = '1' then
+            elsif sch_in_p2.ack_b2 = '1' then
                 state_out2 <= P2;
-            elsif sch_out_p2.ack_b3 = '1' then
+            elsif sch_in_p2.ack_b3 = '1' then
                 state_out2 <= P3;
             end if;
             -- Handle output port 3 access
-            if sch_out_p3.ack_b0 = '1' then
+            if sch_in_p3.ack_b0 = '1' then
                 state_out3 <= P0;
-            elsif sch_out_p3.ack_b1 = '1' then
+            elsif sch_in_p3.ack_b1 = '1' then
                 state_out3 <= P1;
-            elsif sch_out_p3.ack_b2 = '1' then
+            elsif sch_in_p3.ack_b2 = '1' then
                 state_out3 <= P2;
-            elsif sch_out_p3.ack_b3 = '1' then
+            elsif sch_in_p3.ack_b3 = '1' then
                 state_out3 <= P3;
             end if;
         end if;
