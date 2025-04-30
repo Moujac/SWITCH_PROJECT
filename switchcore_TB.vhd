@@ -8,6 +8,7 @@ end entity;
 architecture arch of switchcore_TB is
 
 signal test_pass : std_logic_vector(511 downto 0) := x"0010A47BEA8000123456789008004500002EB3FE000080110540C0A8002CC0A8000404000400001A2DE8000102030405060708090A0B0C0D0E0F1011E6C53DB2";
+signal test_pass2 : std_logic_vector(511 downto 0) := x"0012345678900010A47BEA8008004500002EB3FE000080110540C0A8002CC0A8000404000400001A2DE8000102030405060708090A0B0C0D0E0F1011E6C53DB2";
 signal test_fail : std_logic_vector(511 downto 0) := x"123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123456789123E6C53DB2";
 
 signal tx_data_hold, rx_data_serve : std_logic_vector(31 downto 0) := x"00000000";
@@ -17,6 +18,8 @@ signal clk : std_logic;
 constant clk_period: time:=10 ns;
 
 signal pointer : integer range 0 to 64 := 64;
+
+signal test : integer range 0 to 2 := 0;
 
 BEGIN
 
@@ -33,17 +36,40 @@ SERVE_DATA : process(clk)
 begin
 if (clk'event and clk = '1') then
 
-	--DECREMENT POINTER FROM 64 DOWN TO 0
-	if(pointer > 0) then
-		pointer <= pointer - 1;
-	end if;
+	if(test = 0) then
 
-	if(pointer > 0) then
-		rx_data_serve(31 downto 24) <= test_pass(pointer*8-1 downto pointer*8-8);
-		rx_ctrl_serve <= "1000";
-	else
-		rx_data_serve(31 downto 24) <= x"00";
-		rx_ctrl_serve <= "0000";
+		--DECREMENT POINTER FROM 64 DOWN TO 0
+		if(pointer > 0) then
+			pointer <= pointer - 1;
+		end if;
+
+		if(pointer > 0) then
+			rx_data_serve(31 downto 24) <= test_pass(pointer*8-1 downto pointer*8-8);
+			rx_ctrl_serve <= "1000";
+		else
+			rx_data_serve(31 downto 24) <= x"00";
+			rx_ctrl_serve <= "0000";
+			test <= 1;
+		end if;
+		
+	elsif(test = 1) then
+		test <= 2; --insert interframe gap
+		pointer <= 64;
+		
+	elsif(test = 2) then
+		
+		--DECREMENT POINTER FROM 64 DOWN TO 0
+		if(pointer > 0) then
+			pointer <= pointer - 1;
+		end if;
+
+		if(pointer > 0) then
+			rx_data_serve(23 downto 16) <= test_pass2(pointer*8-1 downto pointer*8-8);
+			rx_ctrl_serve <= "0100";
+		else
+			rx_data_serve(23 downto 16) <= x"00";
+			rx_ctrl_serve <= "0000";
+		end if;
 	end if;
 
 end if;

@@ -40,8 +40,18 @@ signal MAC_DST_ADR, MAC_SRC_ADR: std_logic_vector(47 downto 0) := x"000000000000
 signal complementToggle : std_logic := '0';
 signal complementToggleCnt : integer range 0 to 3;
 
-signal meta, meta_delay1, meta_delay2, meta_delay3, meta_delay4 : inputGate_metaIO;
-
+signal meta : inputGate_metaIO := (
+		data			=> x"00",
+		data_valid		=> '0',
+		complement		=> '0',
+		data_start		=> '0',
+		data_end		=> '0',
+		lenght			=> x"000",
+		lenght_valid	=> '0',
+		dstadr			=> x"000000000000",
+		srcadr			=> x"000000000000",
+		macadr_valid	=> '0'
+);
 signal dont_end_high_on_first_clock : std_logic := '0';
 
 begin
@@ -101,19 +111,19 @@ begin
 		
 		
 		--MATCH END SIGNAL
-		if(rx_ctrl_i = '0' and toggle_end = '0' and dont_end_high_on_first_clock = '1') then
+		if(rx_ctrl_i = '1' and toggle_start = '0') then -- first high
+			toggle_end <= '0';
+		
+		elsif(rx_ctrl_i = '0' and toggle_end = '0' and toggle_start = '1') then -- first low after high
 			meta.data_end <= '1';
 			meta.lenght_valid <= '1';
 			toggle_end <= '1';
-		elsif(rx_ctrl_i = '0' and toggle_end = '1') then
+			
+		elsif(rx_ctrl_i = '0' and toggle_end = '1') then --interframe gap
 			meta.data_end <= '0';
 			meta.lenght_valid <= '0';
-		elsif(rx_ctrl_i = '1' and toggle_end = '1') then
-			toggle_end <= '0';
-			meta.data_end <= '0';
-			meta.lenght_valid <= '0';
+			
 		end if;
-		dont_end_high_on_first_clock <= '1';
 		
 		
 		--READ MAC SOURCE AND DESTINATION
