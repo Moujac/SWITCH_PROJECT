@@ -4,7 +4,7 @@
 -- The round robin scheduler is implemented as a state machine with four states, one for each input buffer.
 -- The scheduler checks the request signals from the input buffers and grants access to the output port based on the round robin priority.
 -- The scheduler also keeps track of the number of bytes left to send for each output port and generates acknowledgment signals for the input buffers.
--- The ACK is only HIGH for 1 clk, DONT MISS IT!!!
+-- ACK is high as long as ACCESS is granted to the output port.
 --
 -- Related files / Dependencies:
 -- custom package switch_pkg.vhd 
@@ -39,6 +39,7 @@ signal state_rr, state_rr_next : state_type1 := P0;
 signal len_out, len_out_next : std_logic_vector(11 downto 0) := (others => '0');
 
 -- Ack next signals for each output port
+signal ack_b0, ack_b1, ack_b2, ack_b3 : std_logic := '0';
 signal ack_b0_next, ack_b1_next, ack_b2_next, ack_b3_next : std_logic := '0';
 
 begin
@@ -47,14 +48,26 @@ begin
     begin
         -- Keep val if no change
         state_rr_next <= state_rr;
-
-        -- Possibly redundant
-        ack_b0_next <= '0'; ack_b1_next <= '0'; ack_b2_next <= '0'; ack_b3_next <= '0';
+        ack_b0_next <= ack_b0;
+        ack_b1_next <= ack_b1;
+        ack_b2_next <= ack_b2;
+        ack_b3_next <= ack_b3;
 
         -- Reduce count representing the number of bytes left to send for each output port
-        if len_out = "000000000000" then
+        -- Handle byte count update
+        if len_out = "000000000001" then
+            -- Last byte: reset len and ack signals
+            -- Reset acks to avoid ack being high 1 clock cycle too long
+            ack_b0_next <= '0';
+            ack_b1_next <= '0';
+            ack_b2_next <= '0';
+            ack_b3_next <= '0';
+            len_out_next <= len_out - 1;
+        elsif len_out = "000000000000" then
+            -- No bytes left, do nothing
             len_out_next <= len_out;
         else
+            -- Decrement byte count
             len_out_next <= len_out - 1;
         end if;
 
@@ -140,15 +153,23 @@ begin
             -- Reset logic here
             state_rr <= P0;
             len_out <= (others => '0');
+            ack_b0 <= '0';
+            ack_b1 <= '0';
+            ack_b2 <= '0';
+            ack_b3 <= '0';
         elsif rising_edge(clk) then
             --  Reg update
             state_rr <= state_rr_next;
             len_out <= len_out_next;
-            -- Define outputs, maybe set in combinational logic???
-            sch_out.ack_b0 <= ack_b0_next;
-            sch_out.ack_b1 <= ack_b1_next;
-            sch_out.ack_b2 <= ack_b2_next;
-            sch_out.ack_b3 <= ack_b3_next;
+            ack_b0 <= ack_b0_next;
+            ack_b1 <= ack_b1_next;
+            ack_b2 <= ack_b2_next;
+            ack_b3 <= ack_b3_next;
+            -- Define outputs
+            sch_out.ack_b0 <= ack_b0;
+            sch_out.ack_b1 <= ack_b1;
+            sch_out.ack_b2 <= ack_b2;
+            sch_out.ack_b3 <= ack_b3;
         end if;
     end process;
 end architecture;
