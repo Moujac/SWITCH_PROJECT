@@ -32,10 +32,41 @@ entity crossbar is
 end crossbar;
 
 architecture crossbar_arch of crossbar is
--- create buffer here!!!
--- need to be 4x max ethernet frame size (1518 bytes) = 6072 bytes
--- need buffer for lengths as well 
--- CHECK DEST MATCH???
-begin
 
+
+-- need buffer for lengths as well 
+-- CHECK DEST MATCH??? how???
+-- Create entity for each output port, to know what dst is what... 
+begin
+    -- create buffer here!!!
+    -- need to be 4x max ethernet frame size (1518 bytes) = 6072 bytes
+    -- 4048 bytes buffer!!!
+    BUFFER : entity work.crossbar_buffer
+        port map(
+            -- later
+            clock => clk,
+            data		: IN STD_LOGIC_VECTOR (7 DOWNTO 0);
+            rdreq		: IN STD_LOGIC ;
+            wrreq		: IN STD_LOGIC ;
+            empty		: OUT STD_LOGIC ;
+            full		: OUT STD_LOGIC ; 
+            q		: OUT STD_LOGIC_VECTOR (7 DOWNTO 0); -- Data out
+            usedw		: OUT STD_LOGIC_VECTOR (11 DOWNTO 0) -- Size
+        );
+
+    -- Combinational logic
+    process(all) -- VHDL 2008 or above
+    begin
+    
+    end process;
+
+    -- Sequential logic
+    process(clk, reset) -- VHDL 2008 or above
+    begin
+        if reset = '1' then
+
+        elsif rising_edge(clk) then
+
+        end if;
+    end process;
  end architecture;
