@@ -73,9 +73,9 @@ begin
 		
 		--Transition computing
 		S0_IDLE_to_S1_PORT_REQUEST 		:= (state = S0_IDLE) and (fifo_output(1) = '1');
-		S1_PORT_REQUEST_to_S2_FORWARD	:= (state = S1_PORT_REQUEST) and (port_respond_valid_i = '0');
+		S1_PORT_REQUEST_to_S2_FORWARD	:= (state = S1_PORT_REQUEST) and (port_respond_valid_i = '1');
 		S2_FORWARD_to_S0_IDLE			:= (state = S2_FORWARD) and (fifo_output(0) = '1');
-		S2_FORWARD_to_S1_PORT_REQUEST	:= (state = S2_FORWARD) and (fifo_output(1) = '1');
+		S2_FORWARD_to_S1_PORT_REQUEST	:= (state = S2_FORWARD) and (fifo_output(1) = '1') and FALSE;
 		
 		--Decide on state using transitions
 		if(S0_IDLE_to_S1_PORT_REQUEST) then
@@ -92,14 +92,21 @@ begin
 		case state is
             when S0_IDLE =>
 			
+				port_reqeust_macadr_o	<= x"000000000000";
+				port_reqeust_scradr_o	<= x"000000000000";
+				port_reqeust_valid_o	<= '0';
+			
 			when S1_PORT_REQUEST =>
 				
 				port_reqeust_macadr_o	<= fifo_meta_output(107 downto 60);
 				port_reqeust_scradr_o	<= fifo_meta_output(59 downto 12);
-														  --fifo_meta_output(11 downto 0)
 				port_reqeust_valid_o	<= '1';
 				
 			when S2_FORWARD =>
+				
+				port_reqeust_macadr_o	<= x"000000000000";
+				port_reqeust_scradr_o	<= x"000000000000";
+				port_reqeust_valid_o	<= '0';
 				
             when others =>
                 
