@@ -29,12 +29,12 @@ entity fabric is
         out_p1 : out fabric_output;
 
         -- Input 3
-        in_p1 : in fabric_input;
-        out_p1 : out fabric_output;
+        in_p2 : in fabric_input;
+        out_p2 : out fabric_output;
 
         -- Input 4
-        in_p1 : in fabric_input;
-        out_p1 : out fabric_output;
+        in_p3 : in fabric_input;
+        out_p3 : out fabric_output;
 
 
         -- Scheduler input / output
