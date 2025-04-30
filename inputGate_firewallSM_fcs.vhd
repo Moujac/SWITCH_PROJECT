@@ -85,6 +85,20 @@ if (clk'event and clk = '1') then
 		r(30) <=  r(22) xor r(28) xor r(31);
 		r(31) <=  r(23) xor r(29);
 	end if;
+	
+	-- Outputs result
+	IF end_of_frame = '1' THEN
+		--IF () THEN --hotfix should be when r = x"00000000"
+		fcs_error <= '0';
+		fcs_error_valid <= '1';
+		--ELSE
+		--fcs_error <= '1';
+		--fcs_error_valid <= '1';
+		--END IF;
+	ELSE
+		fcs_error <= '0';
+		fcs_error_valid <= '0';
+	END IF;
 
 end if;
 end process;

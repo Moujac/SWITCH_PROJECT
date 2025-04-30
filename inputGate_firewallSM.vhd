@@ -1,3 +1,15 @@
+---------------------------------------------------------------------------------------------------------------
+-- Description: 
+-- STEP 2: INST_FIREWALL_SM
+-- Store the data in a FIFO until it have computed the FCS value, if correct it fowards to next step, if there is an error it drops the packet.
+-- This contains a SM, a FIFO and a FCS_calc. It forwards the last meta data (length) to front of packet by skipping the fifo
+--
+-- Related files / Dependencies:
+--
+-- Revision 0.01 - File Created
+-- Additional Comments:
+---------------------------------------------------------------------------------------------------------------
+
 LIBRARY IEEE;
 USE IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
@@ -19,29 +31,30 @@ end entity;
 
 architecture RTL of inputGate_firewallSM is
 
---GMII input
-signal isreading : std_logic := '0';
+-- FAST FORWARD
+signal lenght		: std_logic_vector(11 downto 0);
+signal lenght_valid	: std_logic;
+signal dstadr		: std_logic_vector(47 downto 0);
+signal srcadr		: std_logic_vector(47 downto 0);
+signal macadr_valid	: std_logic;
 
---Instance Helper Signal
+-- ### SIGNALS FOR WIRING ### SIGNALS FOR WIRING ### SIGNALS FOR WIRING ### SIGNALS FOR WIRING ### SIGNALS FOR WIRING ###
+--FCS INST
 signal fcs_input_i : std_logic_vector(7 downto 0) := x"00";
 signal fcs_ctl_start_i, fcs_ctl_end_i, fcs_error_o, fcs_error_valid_o : std_logic := '0';
 
-signal fifo_data_i, fifo_data_o : std_logic_vector(7 downto 0) := x"00";
-signal fifo_usedcnt_o: std_logic_vector(11 downto 0) := x"000";
+--FIFO INST
+signal fifo_input, fifo_output : std_logic_vector(9 downto 0);
+signal fifo_usedcnt_o: std_logic_vector(7 downto 0) := x"00";
 signal fifo_almost_full_o, fifo_empty_o, fifo_full_o, fifo_read_i, fifo_write_i : std_logic := '0';
 
---stolen
-signal CRC                 :   std_logic_vector(7 downto 0);
-signal CRC_REG             :   std_logic_vector(31 downto 0);
-signal CRC_VALID           :   std_logic;
-
-
+-- #### STATE MACHINE #### STATE MACHINE #### STATE MACHINE #### STATE MACHINE #### STATE MACHINE #### STATE MACHINE ###
 type firewall_state_type is (ERROR_STOP, S0_IDLE, S1_DROP, S2_FORWARD);
 signal state : firewall_state_type := S0_IDLE; 
 
 begin
 
-MAIN_PS : process(clk)
+MAIN_SM_PS : process(clk)
 variable S0_IDLE_to_S1_DROP, S0_IDLE_to_S2_FORWARD, S1_DROP_to_S0_IDLE, S2_FORWARD_to_S0_IDLE : boolean;
 variable fifo_end_flag : std_logic;
 begin
@@ -84,13 +97,51 @@ begin
                     state <= S0_IDLE;
                 end if;
 				fifo_read_i <= '1';
-
+				
+			when ERROR_STOP =>
+				state <= S0_IDLE;
+				
             when others =>
                 state <= ERROR_STOP;
         end case;
 	
 	end if;
 end process;
+
+--Skip fifo jump to front
+FAST_FORWARD_PS : process(clk)
+begin
+	if (reset = '1') then
+		--reset all signals
+	elsif (clk'event and clk = '1') then
+	
+		if(meta_i.lenght_valid = '1') then
+			lenght			<= meta_i.lenght;
+			lenght_valid	<= meta_i.lenght_valid;
+		end if;
+		
+		if (meta_i.macadr_valid = '1') then
+			dstadr			<= meta_i.dstadr;
+			srcadr			<= meta_i.srcadr;
+			macadr_valid	<= meta_i.macadr_valid;
+		end if;
+		
+		if (state = S2_FORWARD and fifo_output(1) = '1') then
+			meta_o.lenght <= lenght;
+			meta_o.lenght_valid <= lenght_valid;
+			meta_o.dstadr <= dstadr;
+			meta_o.srcadr <= srcadr;
+			meta_o.macadr_valid <= macadr_valid;
+		else
+			meta_o.lenght <= x"000";
+			meta_o.lenght_valid <= '0';
+			meta_o.dstadr <= x"000000000000";
+			meta_o.srcadr <= x"000000000000";
+			meta_o.macadr_valid <= '0';
+		end if;
+	end if;
+end process;
+
 
 -- ### COMPONENT INSTANCES ### COMPONENT INSTANCES ### COMPONENT INSTANCES ### COMPONENT INSTANCES ### COMPONENT INSTANCES ###
 -- ### COMPONENT INSTANCES ### COMPONENT INSTANCES ### COMPONENT INSTANCES ### COMPONENT INSTANCES ### COMPONENT INSTANCES ###
@@ -108,31 +159,29 @@ INST_FCS: entity work.inputGate_firewallSM_fcs
 		fcs_error_valid   	=> fcs_error_valid_o
     );
 
-INST_STOLEN_FCS: entity work.CRC
-    port map (
-			CLOCK => clk,
-            RESET => reset,
-            DATA                => meta_i.data,
-            LOAD_INIT           => meta_i.data_start,
-            CALC                => meta_i.data_end,
-            D_VALID             => meta_i.data_valid,
-            CRC                 => CRC,
-            CRC_REG             => CRC_REG,
-            CRC_VALID           => CRC_VALID 
-    );
-	
-INST_FIFO: entity work.fifo_bus11
-    port map (
-		aclr			=> reset,
-		clock			=> clk,
-		data			=> meta_i.data, --& meta_i.data_valid & meta_i.data_start & meta_i.data_end,
-		rdreq			=> fifo_read_i,
-		wrreq			=> meta_i.data_valid,
-		almost_full		=> fifo_almost_full_o,
-		empty			=> fifo_empty_o, 
-		full			=> fifo_full_o,
-		q				=> fifo_data_o,
-		usedw			=> fifo_usedcnt_o
-    );
+fifo_input <= meta_i.data & meta_i.data_start & meta_i.data_end;
+
+INST_FIFO: entity work.fifo_bus10_word256
+	PORT MAP(
+		aclr		=> reset,
+		clock		=> clk,
+		data		=> fifo_input,
+		rdreq		=> fifo_read_i,
+		wrreq		=> meta_i.data_valid,
+		empty		=> fifo_empty_o, 
+		full		=> fifo_full_o,
+		q			=> fifo_output,
+		usedw		=> fifo_usedcnt_o
+	);
+
+-- ### FORWARD ### FORWARD ### FORWARD ### FORWARD ### FORWARD ### FORWARD ### FORWARD ### FORWARD ### FORWARD ### FORWARD ###
+
+meta_o.data 		<= fifo_output(9 downto 2);
+meta_o.data_valid 	<= fifo_read_i;
+meta_o.complement 	<= '0'; -- no longer needed
+meta_o.data_start 	<= fifo_output(1);
+meta_o.data_end 	<= fifo_output(0);
+
+
 
 end architecture;

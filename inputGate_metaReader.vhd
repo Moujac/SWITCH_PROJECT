@@ -1,3 +1,14 @@
+---------------------------------------------------------------------------------------------------------------
+-- Description: 
+-- STEP 1: INST_META_READER
+-- Interprets GMII input and outputs meta values (like end and start flag also MACDST) timed together with the data.
+-- The metaReader.vhd file is difficult to read because it uses a buffer to correct the end flag timing. 
+--
+-- Related files / Dependencies:
+--
+-- Revision 0.01 - File Created
+-- Additional Comments:
+---------------------------------------------------------------------------------------------------------------
 LIBRARY IEEE;
 USE IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
@@ -31,6 +42,8 @@ signal complementToggleCnt : integer range 0 to 3;
 
 signal meta, meta_delay1, meta_delay2, meta_delay3, meta_delay4 : inputGate_metaIO;
 
+signal dont_end_high_on_first_clock : std_logic := '0';
+
 begin
 
 meta_o		<= meta ;
@@ -49,10 +62,12 @@ begin
 		delay_data <= rx_data_i;
 		delay_ctrl <= rx_ctrl_i;
 		
-		if(delay_ctrl = '1') then
+		--length
+		if(rx_ctrl_i = '1') then
 			bytecnt <= bytecnt + 1;
 		end if;
 		
+		--start flag
 		if (rx_ctrl_i = '1' and toggle_start = '0') then
 			toggle_start <= '1';
 			delay_start <= '1';
@@ -68,7 +83,7 @@ begin
 		meta.data_start 	<= delay_start;
 		meta.lenght 		<= bytecnt;
 		
-		
+		--Complement (used for fcs)
 		if (complementToggle = '0' and (toggle_start = '0' and rx_ctrl_i = '1')) then
 			complementToggle <= '1';
 			complementToggleCnt <= 0;
@@ -85,15 +100,20 @@ begin
 		end if;
 		
 		
-		if(rx_ctrl_i = '0' and toggle_end = '0') then
+		--MATCH END SIGNAL
+		if(rx_ctrl_i = '0' and toggle_end = '0' and dont_end_high_on_first_clock = '1') then
 			meta.data_end <= '1';
+			meta.lenght_valid <= '1';
 			toggle_end <= '1';
 		elsif(rx_ctrl_i = '0' and toggle_end = '1') then
 			meta.data_end <= '0';
+			meta.lenght_valid <= '0';
 		elsif(rx_ctrl_i = '1' and toggle_end = '1') then
 			toggle_end <= '0';
 			meta.data_end <= '0';
+			meta.lenght_valid <= '0';
 		end if;
+		dont_end_high_on_first_clock <= '1';
 		
 		
 		--READ MAC SOURCE AND DESTINATION
