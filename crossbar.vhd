@@ -45,7 +45,7 @@ begin
     -- create buffer here!!!
     -- need to be 4x max ethernet frame size (1518 bytes) = 6072 bytes
     -- 4048 bytes buffer!!!
-    BUFFER : entity work.crossbar_buffer
+    inst_buffer : entity work.crossbar_fifo
         port map(
             -- later
             clock => clk,
