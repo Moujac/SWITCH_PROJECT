@@ -44,7 +44,7 @@ entity inputGate is
 		port_respond_valid_i 	: in std_logic;
 		
 		--SwitchFabric
-		meta_o			: out inputGate_metaIO
+		fabric_input_o			: out fabric_input
 	);
 end entity;
 
@@ -63,6 +63,15 @@ signal metareader_meta_wire, firewall_meta_wire, mactoport_meta_wire : inputGate
 		dstadr			=> x"000000000000",
 		srcadr			=> x"000000000000",
 		macadr_valid	=> '0'
+);
+
+signal fabric_wire : fabric_input := (
+		RX  	=> x"00",
+		val_d 	=> '0',
+		len 	=> x"000",
+		val_l 	=> '0',
+		outt 	=> "000",
+		val_o 	=> '0'
 );
 
 --MAC controller WIRING
@@ -107,7 +116,7 @@ INST_MACTOPORT_SM: entity work.inputGate_mactoportSM --STEP 3
 		meta_i 			=> firewall_meta_wire,
 		
 		--Output Interface
-		meta_o 			=> mactoport_meta_wire,
+		fabric_o 			=> fabric_wire,
 		
 		--MAC controller Interface
 		port_reqeust_macadr_o	=> port_reqeust_macadr_wire,
@@ -128,6 +137,6 @@ port_respond_port_wire <= port_respond_port_i;
 port_respond_valid_wire <= port_respond_valid_i;
 		
 --SwitchFabric
-meta_o			<= mactoport_meta_wire;
+fabric_input_o <= fabric_wire;
 
 end architecture;

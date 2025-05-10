@@ -78,6 +78,11 @@ signal schedular_output_1, schedular_output_2, schedular_output_3, schedular_out
 
 BEGIN
 
+-- ### COMPONENT INSTANCES ### COMPONENT INSTANCES ### COMPONENT INSTANCES ### COMPONENT INSTANCES ### COMPONENT INSTANCES ###
+-- ### COMPONENT INSTANCES ### COMPONENT INSTANCES ### COMPONENT INSTANCES ### COMPONENT INSTANCES ### COMPONENT INSTANCES ###
+
+-- INPUT GATE 1-4
+
 INST_INPUT_GATE_1: entity work.inputGate
     port map (
 		clk 	      	=> clk,
@@ -95,7 +100,7 @@ INST_INPUT_GATE_1: entity work.inputGate
 		port_respond_valid_i 	=> port_respond_valid_1,
 		
 		--SwitchFabric
-		meta_o			=> meta_1
+		fabric_input_o			=> fabric_input_1
     );
 	
 INST_INPUT_GATE_2: entity work.inputGate
@@ -115,9 +120,10 @@ INST_INPUT_GATE_2: entity work.inputGate
 		port_respond_valid_i 	=> port_respond_valid_2,
 		
 		--SwitchFabric
-		meta_o			=> meta_2
+		fabric_input_o			=> fabric_input_2
     );
 
+--WIRE MAC CONTROLLER 
 gate_1_mac_input.mac_src <= port_reqeust_srcadr_1;
 gate_1_mac_input.mac_dst <= port_reqeust_macadr_1;
 gate_1_mac_input.req <= port_reqeust_valid_1;
@@ -175,7 +181,6 @@ INST_SCHEDULAR: entity work.schedular_controller
         sch_out_p3 		=> schedular_output_4
     );
 
-
 	
 INST_FABRIC: entity work.fabric
     port map(
@@ -213,6 +218,7 @@ INST_FABRIC: entity work.fabric
         sch_in_p3 	=> schedular_output_4,
         sch_out_p3 	=> schedular_input_4
     );
+
 
 END arch;
 

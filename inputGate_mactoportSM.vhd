@@ -26,7 +26,8 @@ entity inputGate_mactoportSM is
 		meta_i 			: in inputGate_metaIO;
 		
 		--Output Interface
-		meta_o 			: out inputGate_metaIO;
+		--meta_o 			: out inputGate_metaIO;
+		fabric_o 		: out fabric_input;
 		
 		--MAC controller Interface
 		port_reqeust_macadr_o	: out std_logic_vector(47 downto 0);
@@ -53,6 +54,21 @@ signal fifo_meta_almost_full_o, fifo_meta_empty_o, fifo_meta_full_o, fifo_meta_r
 -- #### STATE MACHINE #### STATE MACHINE #### STATE MACHINE #### STATE MACHINE #### STATE MACHINE #### STATE MACHINE ###
 type mactoport_state_type is (ERROR_STOP, S0_IDLE, S1_PORT_REQUEST, S2_FORWARD);
 signal state : mactoport_state_type := S0_IDLE; 
+
+
+
+signal fabric_wire : fabric_input := (
+		RX  	=> x"00",
+		val_d 	=> '0',
+		len 	=> x"000",
+		val_l 	=> '0',
+		outt 	=> "000",
+		val_o 	=> '0'
+);
+
+signal init_forward_toggle : std_logic := '0';
+
+signal save_port_respond	: std_logic_vector(2 downto 0);
 
 begin
 
@@ -95,6 +111,9 @@ begin
 				port_reqeust_macadr_o	<= x"000000000000";
 				port_reqeust_scradr_o	<= x"000000000000";
 				port_reqeust_valid_o	<= '0';
+				
+				fabric_wire.RX  	<= x"00";
+				fabric_wire.val_d 	<= '0';
 			
 			when S1_PORT_REQUEST =>
 				
@@ -107,10 +126,36 @@ begin
 				port_reqeust_macadr_o	<= x"000000000000";
 				port_reqeust_scradr_o	<= x"000000000000";
 				port_reqeust_valid_o	<= '0';
+				fifo_read_i <= '1';
+				
+				if init_forward_toggle = '0' then
+					init_forward_toggle <= '1';
+				
+					fabric_wire.RX  	<= fifo_output(9 downto 2);
+					fabric_wire.val_d 	<= '1';
+					fabric_wire.len 	<= fifo_meta_output(11 downto 0);
+					fabric_wire.val_l 	<= '1';
+					fabric_wire.outt 	<= save_port_respond;
+					fabric_wire.val_o 	<= '1';
+				else
+					fabric_wire.RX  	<= fifo_output(9 downto 2);
+					fabric_wire.val_d 	<= '1';
+					fabric_wire.len 	<= x"000";
+					fabric_wire.val_l 	<= '0';
+					fabric_wire.outt 	<= "000";
+					fabric_wire.val_o 	<= '0';
+				end if;
 				
             when others =>
                 
         end case;
+		
+		
+		
+		--ADDITONAL logic
+		if (port_respond_valid_i = '1') then
+			save_port_respond <= port_respond_port_i;
+		end if;
 	
 	end if;
 end process;
@@ -144,5 +189,9 @@ INST_FIFO_META: entity work.fifo_bus108_word32
 		q			=> fifo_meta_output,
 		usedw		=> fifo_meta_usedcnt_o
 	);
+
+fabric_o <= fabric_wire;
+
+
 
 end architecture;
