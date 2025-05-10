@@ -198,8 +198,8 @@ begin
             addr_dst <= addr_dst_next;
             addr_src <= addr_src_next;
             -- Handle timeout logic
-            -- Should ++ time stamp approx every 35secs at 125 MHz
-            if time_count = x"0FFFFFFF" then
+            -- Should ++ time stamp approx every 30secs at 125 MHz
+            if time_count = x"DFDC1C00" then
                 time_count <= (others => '0');
                 time_stamp <= time_stamp + 1;
             else
@@ -239,7 +239,7 @@ begin
                     -- Delete old entries, while memory access is idle
                     addr_count <= addr_count + 1;
                     -- Check if entry is older than approx 5 minutes at 125 MHz
-                    if (time_stamp - read_temp(4 downto 0)) > 30 then
+                    if (time_stamp - read_temp(4 downto 0)) > 10 then
                         mac_table(to_integer(unsigned(addr_count))) <= (others => '0');
                     end if;
             end case;
