@@ -181,6 +181,7 @@ begin
 
     -- Sequential logic
     process(clk, reset)
+        variable read_temp : std_logic_vector(7 downto 0);
     begin
         if reset = '1' then
             state_access <= NONE;
@@ -198,7 +199,7 @@ begin
             addr_src <= addr_src_next;
             -- Handle timeout logic
             -- Should ++ time stamp approx every 35secs at 125 MHz
-            if time_count = x"FFFFFFFF" then
+            if time_count = x"0FFFFFFF" then
                 time_count <= (others => '0');
                 time_stamp <= time_stamp + 1;
             else
@@ -232,11 +233,13 @@ begin
                     macc_out_p3.ack <= '1';
                     mac_table(to_integer(unsigned(addr_src))) <= "100" & time_stamp;
                 when NONE =>
+                    -- Reworked with variables to fix memory access problems
+                    -- Need to verify variable correctness
+                    read_temp := mac_table(to_integer(unsigned(addr_dst)));
                     -- Delete old entries, while memory access is idle
                     addr_count <= addr_count + 1;
                     -- Check if entry is older than approx 5 minutes at 125 MHz
-                    -- 9 is closer to 5.15 mins
-                    if time_stamp - mac_table(to_integer(unsigned(addr_count)))(4 downto 0) > 9 then
+                    if (time_stamp - read_temp(4 downto 0)) > 30 then
                         mac_table(to_integer(unsigned(addr_count))) <= (others => '0');
                     end if;
             end case;
