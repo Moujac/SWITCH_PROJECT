@@ -66,7 +66,6 @@ architecture mac_controller_arch of mac_controller is
     signal addr_count : std_logic_vector(12 downto 0) := (others => '0');
     signal time_count : std_logic_vector(31 downto 0) := (others => '0');
     signal time_stamp : std_logic_vector(4 downto 0) := (others => '0');
-    signal read_temp : std_logic_vector(7 downto 0) := (others => '0');
 
 begin
     -- Combinational logic
@@ -181,6 +180,7 @@ begin
 
     -- Sequential logic
     process(clk, reset)
+        variable read_temp : std_logic_vector(7 downto 0) := (others => '0');
     begin
         if reset = '1' then
             state_access <= NONE;
@@ -197,7 +197,7 @@ begin
             addr_dst <= addr_dst_next;
             addr_src <= addr_src_next;
             -- Handle timeout logic
-            -- Should ++ time stamp approx every 30secs at 125 MHz
+            -- Should ++ time stamp every 30secs at 125 MHz
             if time_count = x"DFDC1C00" then
                 time_count <= (others => '0');
                 time_stamp <= time_stamp + 1;
@@ -233,14 +233,14 @@ begin
                     mac_table(to_integer(unsigned(addr_src))) <= "100" & time_stamp;
                 when NONE =>
                     -- Delete old entries, while memory access is idle
-                    -- Pipelined for clock speed + mem access problem
                     addr_count <= addr_count + 1;
-                    --read_temp <= mac_table(to_integer(unsigned(addr_dst)));
-                    -- Check if entry is older than approx 5 minutes at 125 MHz
+                    -- NOT WORKING UNDER SYNTHESIS, NOT CURRENTLY INFERENCED CORRECTLY
+                    --read_temp := mac_table(to_integer(unsigned(addr_count)));
+                    -- Check if entry is older than 5 minutes at 125 MHz
                     --if (time_stamp - read_temp(4 downto 0)) > 10 then
-                    if (time_stamp - mac_table(to_integer(unsigned(addr_count)))(4 downto 0)) > 10 then
-                        mac_table(to_integer(unsigned(addr_count))) <= (others => '0');
-                    end if;
+                    --if (time_stamp - mac_table(to_integer(unsigned(addr_count)))(4 downto 0)) > 10 then
+                        --mac_table(to_integer(unsigned(addr_count))) <= (others => '0');
+                    --end if;
             end case;
         end if;
     end process;
