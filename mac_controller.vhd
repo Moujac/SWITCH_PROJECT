@@ -62,11 +62,11 @@ architecture mac_controller_arch of mac_controller is
     signal mac_dst_temp, mac_src_temp : std_logic_vector(47 downto 0);
     signal mac_dst_temp16, mac_src_temp16 : std_logic_vector(15 downto 0);
 
-    -- Counters for timeout
+    -- Timeout signals
     signal addr_count : std_logic_vector(12 downto 0) := (others => '0');
-     -- Should be enough for 125 MHz clock? 
     signal time_count : std_logic_vector(31 downto 0) := (others => '0');
     signal time_stamp : std_logic_vector(4 downto 0) := (others => '0');
+    signal read_temp : std_logic_vector(7 downto 0) := (others => '0');
 
 begin
     -- Combinational logic
@@ -181,7 +181,6 @@ begin
 
     -- Sequential logic
     process(clk, reset)
-        variable read_temp : std_logic_vector(7 downto 0);
     begin
         if reset = '1' then
             state_access <= NONE;
@@ -233,13 +232,13 @@ begin
                     macc_out_p3.ack <= '1';
                     mac_table(to_integer(unsigned(addr_src))) <= "100" & time_stamp;
                 when NONE =>
-                    -- Reworked with variables to fix memory access problems
-                    -- Need to verify variable correctness
-                    read_temp := mac_table(to_integer(unsigned(addr_dst)));
                     -- Delete old entries, while memory access is idle
+                    -- Pipelined for clock speed + mem access problem
                     addr_count <= addr_count + 1;
+                    --read_temp <= mac_table(to_integer(unsigned(addr_dst)));
                     -- Check if entry is older than approx 5 minutes at 125 MHz
-                    if (time_stamp - read_temp(4 downto 0)) > 10 then
+                    --if (time_stamp - read_temp(4 downto 0)) > 10 then
+                    if (time_stamp - mac_table(to_integer(unsigned(addr_count)))(4 downto 0)) > 10 then
                         mac_table(to_integer(unsigned(addr_count))) <= (others => '0');
                     end if;
             end case;
